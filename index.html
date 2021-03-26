@@ -1,0 +1,175 @@
+<!--Esta página implementa a inteface gráfica para usar o analisador de textos-->
+
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Analisador de Plágio</title>	
+	<link rel="stylesheet" href="stylesheet.css">
+	<script src="analisador.js"></script>
+</head>
+<body>
+<div id='par'>
+	<h1>Análise por par.</h1> <br>
+	Autor1: <input type='text' id='autor1' size=50></input> <br>
+	Texto1 
+	<br>	
+	<textarea id="txt1" rows=15 cols=100></textarea> 
+	<br>
+	<br>
+	Autor2: <input type='text' id='autor2' size=50></input> <br>
+	Texto2 
+	<br>
+	<textarea id="txt2" rows=15 cols=100></textarea>
+	<br>
+	<button id="bot">Analisar</button>
+	<br>Semelhança = <label id="sem"></label>%
+</div>
+<div id='relatorio'>
+	<h1>Relatório de semelhança.</h1>
+</div>	
+<div id='biblioteca'>
+	<h1>Biblioteca.</h1> <br>
+	<textarea id='txtlib' rows=40 cols=100></textarea>
+	<button id='botlib'>Analisar</button>
+</div>
+<div id='autores'>
+	<h1>Autores.</h1>
+</div>
+<div id='mapa'>
+	<h1>Mapa de semelhanças.</h1>
+	<table id='table' cellpadding=15></table>
+</div>
+	<script> 
+		// captura os botões
+		var botaoPar = document.getElementById('bot'); // Análise por par
+		var botaoLib = document.getElementById('botlib'); // Biblioteca
+		
+		botaoPar.onclick = function() { 
+			// autor do primeiro texto
+			var autor1 = document.getElementById('autor1').value;
+			// autor do segundo texto
+			var autor2 = document.getElementById('autor2').value;
+			// texto na primeira área de texto
+			var texto1 = document.getElementById('txt1').value;
+			// texto na segunda área de texto
+			var texto2 = document.getElementById('txt2').value;
+			
+			// cria um analisador com os dois textos--
+			analisador = new Analisador();
+			
+			var label = document.getElementById('sem') // captura o label
+			// faz a aprecer o valor da semelhança no label
+			var semelhanca = analisador.calcularSemelhanca(texto1, texto2);
+			label.innerHTML = semelhanca;
+			
+			// captura a div do relatório.
+			var relatorio = document.getElementById('relatorio');
+			
+			// prepara as variáveis do relatório;
+			var t1 = analisador.criarTokens(texto1, analisador.REGEX);
+			var t2 = analisador.criarTokens(texto2, analisador.REGEX);
+			var p1 = analisador.elementosDiferentes(t1);
+			var p2 = analisador.elementosDiferentes(t2);
+			var p1Ip2 = analisador.intersecao(t1, t2);
+			
+			// cria o texto do relatório.
+			var textoRelator = '<h1>Relatório de semelhança.</h1>' +
+				'<h2>' + autor1 + ' x ' + autor2 + '<h2>' +
+				'<h3>Semelhança = ' + semelhanca + '%</h3>' +
+				'<b>Texto 1 (' + t1.length + ' palavras): </b>' + texto1 + '<br><br>' +
+				'<b>Texto 2 (' + t2.length + ' palavras): </b>' + texto2 + '<br><br>' +
+				'<b>Palavras diferentes do texto 1 (' + p1.length + ' palavras): </b>' + p1.valueOf() + '<br><br>' +	
+				'<b>Palavras diferentes do texto 2 (' + p2.length + ' palavras): </b>' + p2.valueOf() + '<br><br>' +
+				'<b>Palavras comuns aos dois textos (' + p1Ip2.length + ' palavras): </b>' + p1Ip2.valueOf() + '<br><br>';				
+				
+			// insere um relatório no texto da div.
+			relatorio.innerHTML = textoRelator;
+		}
+		
+		botaoLib.onclick = function() {
+/* exemplo:
+@a
+*b c d
+@c
+*d a b c
+@e
+*a a b
+@g
+*a b c d e c d
+@i
+*a e c d e
+@k
+*a b c d*/				
+			// captura texto da área da biblioteca.
+			var texto = document.getElementById('txtlib').value;
+			
+			// guarda a divisão do conteúdo entre autores (posições ímpares)
+			// e seus textos (posiçoes pares diferente de zero).
+			var divisao = texto.split(/[@*]/);
+			
+			// cria o array que vai guardar os autores.
+			var autores = [];
+			
+			// loop que guarda os autores no seu array.
+			for (var i = 0; i < divisao.length; i++) {
+				if (i % 2 != 0) {
+					autores.push(divisao[i]);
+				}
+			}
+			
+			// cria um analisador.
+			analisador = new Analisador();
+			
+			// passa os textos da divisão para o analisador.
+			for (var i = 1; i < divisao.length; i++) {
+				if (i % 2 == 0) {
+					analisador.adicionar(divisao[i]);
+				}
+			}
+			
+			// cria a biblioteca de semelhança entre os textos.
+			var lib = analisador.biblioteca();
+						
+			// coloca os nomes dos autores na div de autores.
+			var nomes = '<h1>Autores.</h1>';
+			
+			for (var i = 0; i < autores.length; i++) {
+				nomes += '<br>' + (i + 1) + '. ' + autores[i];				
+			}
+			
+			document.getElementById('autores').innerHTML = nomes;
+			
+			// cria o mapa com os valores da biblioteca de semelhança.
+			var semel = '';
+			var cor;			
+			for (var i = 0; i < lib.length; i++) {
+				var soma = 0;
+				semel += '<tr>'
+				for (var j = 0; j < lib.length; j++) {
+					// vai somando as semelhanças do autor.
+					soma += new Number(lib[i][j]); 
+					
+					// escolhe a cor da fonte usada na semelhança.
+					if (lib[i][j] <= 29.9) { 
+						cor = '#228b22'; // verde floresta
+					} else if (lib[i][j] <= 69.9) {
+						cor = '#daa520'; // ouro envelhecido
+					} else if (lib[i][j] <= 100.0){
+						cor = 'ff0000'; // vermelho
+					}
+					
+					//Adiciona semelhança apenas entre autores diferentes.
+					semel += (i != j) ? '<td><font color=' + cor + '>(' 
+						+ (i + 1) + ', ' + (j + 1) + '): ' + lib[i][j] + '%</font>'
+						: '<td align=\'center\'>-----';				
+				}
+				
+				// Adiciona a média da linha na última coluna. É descontada a 
+				// semelhança de 100% com o próprio autor, restando apenas entre
+				// diferentes dele.
+				semel += '<td>média=' + new Number((soma - 100) / (lib.length - 1)).toFixed(1) + '%';
+			}
+			
+			document.getElementById('table').innerHTML = semel;
+		}
+	</script>
+</body>
