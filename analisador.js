@@ -1,6 +1,6 @@
-/* Essa classe é responsável por pegar os dois textos passados em seu
-* construtor e calcular a porcentagem de palavras em comum aos dois
-* relativamente ao total de palavras diferentes usadas neles.
+/* Essa classe é responsável por calcular a porcentagem de palavras em
+* comum de dois textos relativamente ao total de palavras diferentes
+* usadas neles.
 *
 * semelhança = 100 * palavras em comum / total de palavras dif. dos dois
 * textos.*/
@@ -23,8 +23,8 @@ Analisador.prototype = {
 	// Calcula a semelhança entre dois textos.
 	calcularSemelhanca: function(texto1, texto2) {
 		// Separa os tokens não vazios do texto usando expressão regular.
-		var t1 = this.criarTokens(texto1, REGEX);
-		var t2 = this.criarTokens(texto2, REGEX);
+		var t1 = this.criarTokens(texto1);
+		var t2 = this.criarTokens(texto2);
 		
 		// Calculamos quantas palavras tem na união dos dois textos.
 		var p1_uniao_p2 = this.uniao(t1, t2).length;
@@ -78,8 +78,7 @@ Analisador.prototype = {
 			novo_array.push(key);
 		}
 		
-		// O tamanho do novo array é a quantidade de elementos
-		// sem repetição.
+		// O novo array tem os elementos sem repetições.
 		return novo_array;
 	},
 	
@@ -118,6 +117,7 @@ Analisador.prototype = {
 			}
 		}
 		
+		// tira os elementos repetidos e retorna o conjunto intersação.
 		return this.elementosDiferentes(inter);
 	}
 }

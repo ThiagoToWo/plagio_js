@@ -54,7 +54,7 @@
 			// texto na segunda área de texto
 			var texto2 = document.getElementById('txt2').value;
 			
-			// cria um analisador com os dois textos--
+			// cria um analisador
 			analisador = new Analisador();
 			
 			var label = document.getElementById('sem') // captura o label
@@ -145,7 +145,7 @@
 				var soma = 0;
 				semel += '<tr>'
 				for (var j = 0; j < lib.length; j++) {
-					// vai somando as semelhanças do autor.
+					// vai somando as semelhanças dos autores.
 					soma += new Number(lib[i][j]); 
 										
 					//Adiciona semelhança apenas entre autores diferentes.
@@ -156,7 +156,7 @@
 				
 				// Adiciona a média da linha na última coluna. É descontada a 
 				// semelhança de 100% com o próprio autor, restando apenas entre
-				// diferentes dele.
+				// os diferentes dele.
 				var media = new Number((soma - 100) / (lib.length - 1)).toFixed(1);
 				semel += '<td><font color=white>média=</font><font color=' + escolherCor(media) + '>'
 					+ media + '%</font>';
