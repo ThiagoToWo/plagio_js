@@ -1,14 +1,26 @@
-#par {
-	border: 2px solid black;
+body {
+	background-color: black;
+}
+div {
+	border: 2px solid red;
 	position: absolute;
+}
+textarea, input {
+	border: 2px solid red;
+}
+.textos {
+	color: red;
+}
+#fonteDoCorpo {
+	color: orange;
+}
+#par {
 	top: 0.5%;
 	left: 0.5%;
 	width: 49%;
 	height: 111%;
 }
-#relatorio {
-	border: 2px solid black;
-	position: absolute;
+#relatorio {	
 	top: 0.5%;
 	left: 50%;
 	width: 49%;
@@ -16,16 +28,12 @@
 	overflow: scroll;
 }
 #biblioteca {
-	border: 2px solid black;
-	position: absolute;
 	top: 113%;
 	left: 0.5%;
 	width: 49%;
 	height: 115%;
 }
 #autores {
-	border: 2px solid black;
-	position: absolute;
 	top: 113%;
 	left: 50%;
 	width: 49%;
@@ -33,10 +41,12 @@
 	overflow: scroll;
 }
 #mapa {
-	border: 2px solid black;
-	position: absolute;
 	top: 229%;
 	left: 0.5%;
 	width: 98.5%;
+	height: 100%;
 	overflow: scroll;
+}
+td {
+	width: 200px;
 }
