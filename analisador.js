@@ -83,9 +83,9 @@ Analisador.prototype = {
 		return novo_array;
 	},
 	
-	criarTokens: function(texto, regex) {
+	criarTokens: function(texto) {
 		// faz o split normal com regex.
-		var split = texto.split(regex);
+		var split = texto.split(REGEX);
 		
 		// Como o split() deixa elementos nulos e eles não são
 		// contados como palavras, a iteração abaixo remove eles
