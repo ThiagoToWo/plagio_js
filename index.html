@@ -7,6 +7,7 @@
 	<script src="analisador.js"></script>
 </head>
 <body>
+<font id='fonteDoCorpo'>
 <div id='par'>
 	<h1>Análise por par.</h1> <br>
 	Autor1: <input type='text' id='autor1' size=50></input> <br>
@@ -65,8 +66,8 @@
 			var relatorio = document.getElementById('relatorio');
 			
 			// prepara as variáveis do relatório;
-			var t1 = analisador.criarTokens(texto1, analisador.REGEX);
-			var t2 = analisador.criarTokens(texto2, analisador.REGEX);
+			var t1 = analisador.criarTokens(texto1);
+			var t2 = analisador.criarTokens(texto2);
 			var p1 = analisador.elementosDiferentes(t1);
 			var p2 = analisador.elementosDiferentes(t2);
 			var p1Ip2 = analisador.intersecao(t1, t2);
@@ -139,37 +140,42 @@
 			document.getElementById('autores').innerHTML = nomes;
 			
 			// cria o mapa com os valores da biblioteca de semelhança.
-			var semel = '';
-			var cor;			
+			var semel = '';						
 			for (var i = 0; i < lib.length; i++) {
 				var soma = 0;
 				semel += '<tr>'
 				for (var j = 0; j < lib.length; j++) {
 					// vai somando as semelhanças do autor.
 					soma += new Number(lib[i][j]); 
-					
-					// escolhe a cor da fonte usada na semelhança.
-					if (lib[i][j] <= 29.9) { 
-						cor = '#228b22'; // verde floresta
-					} else if (lib[i][j] <= 69.9) {
-						cor = '#daa520'; // ouro envelhecido
-					} else if (lib[i][j] <= 100.0){
-						cor = 'ff0000'; // vermelho
-					}
-					
+										
 					//Adiciona semelhança apenas entre autores diferentes.
-					semel += (i != j) ? '<td><font color=' + cor + '>(' 
-						+ (i + 1) + ', ' + (j + 1) + '): ' + lib[i][j] + '%</font>'
-						: '<td align=\'center\'>-----';				
+					semel += (i != j) ? '<td><font color=' + escolherCor(lib[i][j]) + '>(' 
+						+ (i + 1) + ',' + (j + 1) + '):' + lib[i][j] + '%</font>'
+						: '<td align=center>-----';				
 				}
 				
 				// Adiciona a média da linha na última coluna. É descontada a 
 				// semelhança de 100% com o próprio autor, restando apenas entre
 				// diferentes dele.
-				semel += '<td>média=' + new Number((soma - 100) / (lib.length - 1)).toFixed(1) + '%';
+				var media = new Number((soma - 100) / (lib.length - 1)).toFixed(1);
+				semel += '<td><font color=white>média=</font><font color=' + escolherCor(media) + '>'
+					+ media + '%</font>';
 			}
 			
 			document.getElementById('table').innerHTML = semel;
+		}
+		
+		// Função que escolhe a cor do valor de acordo com seu módulo.
+		function escolherCor(valor) {
+			var cor;
+			if (valor <= 29.9) { 
+				cor = '#228b22'; // verde floresta
+			} else if (valor <= 69.9) {
+				cor = '#daa520'; // ouro envelhecido
+			} else if (valor <= 100.0){
+				cor = 'ff0000'; // vermelho
+			}
+			return cor;
 		}
 	</script>
 </body>
