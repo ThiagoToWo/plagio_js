@@ -7,30 +7,46 @@
 	<script src="analisador.js"></script>
 </head>
 <body>
-<font id='fonteDoCorpo'>
 <div id='par'>
 	<h1>Análise por par.</h1> <br>
-	Autor1: <input type='text' id='autor1' size=50></input> <br>
+	Autor1: <input class='in' type='text' id='autor1' size=50></input> <br>
 	Texto1 
 	<br>	
-	<textarea id="txt1" rows=15 cols=100></textarea> 
+	<textarea class='in' id="txt1" rows=15 cols=100></textarea> 
 	<br>
 	<br>
-	Autor2: <input type='text' id='autor2' size=50></input> <br>
+	Autor2: <input class='in' type='text' id='autor2' size=50></input> <br>
 	Texto2 
 	<br>
-	<textarea id="txt2" rows=15 cols=100></textarea>
+	<textarea class='in' id="txt2" rows=15 cols=100></textarea>
 	<br>
 	<button id="bot">Analisar</button>
-	<br>Semelhança = <label id="sem"></label>%
+	Semelhança = <label id="sem"></label>%
 </div>
 <div id='relatorio'>
 	<h1>Relatório de semelhança.</h1>
 </div>	
 <div id='biblioteca'>
 	<h1>Biblioteca.</h1> <br>
-	<textarea id='txtlib' rows=40 cols=100></textarea>
+	<textarea class='in' id='txtlib' rows=40 cols=100
+	placeholder='Inclua o nome do autor precedido de "@" e seu respectivo texto precedido de "*". Os espaços em branco e as quebras de linha entre esses dois componentes não serão considerados.
+
+Por exemplo:
+
+@Nome do Autor1
+*Texto escrito pelo Autor1.
+@Nome do Autor2
+*Texto escrito pelo Autor2.
+
+@Nome do Autor3
+*Texto escrito pelo Autor3.
+
+@Nome do Autor4
+
+*Texto escrito pelo Autor4.
+@Nome do Autor5*Texto escrito pelo Autor5.'></textarea>
 	<button id='botlib'>Analisar</button>
+	<input type='file' id='botfile'/>
 </div>
 <div id='autores'>
 	<h1>Autores.</h1>
@@ -43,6 +59,7 @@
 		// captura os botões
 		var botaoPar = document.getElementById('bot'); // Análise por par
 		var botaoLib = document.getElementById('botlib'); // Biblioteca
+		var botaoFile = document.getElementById('botfile'); // Botão para escolher arquivo
 		
 		botaoPar.onclick = function() { 
 			// autor do primeiro texto
@@ -176,6 +193,22 @@
 				cor = 'ff0000'; // vermelho
 			}
 			return cor;
+		}
+		
+		botaoFile.onchange = function() {
+			var file = this.files[0];
+			var leitor = new FileReader();
+			
+			leitor.readAsText(file);
+			leitor.onload = function() {
+				var texto = leitor.result;
+				var saida = document.getElementById('txtlib');
+				saida.value = texto;
+			}
+
+			leitor.onerror = function(e) {
+				console.log('Ocorreu um erro.', e);
+			}
 		}
 	</script>
 </body>
