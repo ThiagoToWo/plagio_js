@@ -60,6 +60,8 @@ Por exemplo:
 		var botaoPar = document.getElementById('bot'); // Análise por par
 		var botaoLib = document.getElementById('botlib'); // Biblioteca
 		var botaoFile = document.getElementById('botfile'); // Botão para escolher arquivo
+		var relatorio = document.getElementById('relatorio'); // captura a div do relatório.
+		var textoRelator; // Para guardar o texto do relatório.
 		
 		botaoPar.onclick = function() { 
 			// autor do primeiro texto
@@ -77,29 +79,14 @@ Por exemplo:
 			var label = document.getElementById('sem') // captura o label
 			// faz a aprecer o valor da semelhança no label
 			var semelhanca = analisador.calcularSemelhanca(texto1, texto2);
-			label.innerHTML = semelhanca;
+			label.innerHTML = semelhanca;		
 			
-			// captura a div do relatório.
-			var relatorio = document.getElementById('relatorio');
-			
-			// prepara as variáveis do relatório;
-			var t1 = analisador.criarTokens(texto1);
-			var t2 = analisador.criarTokens(texto2);
-			var p1 = analisador.elementosDiferentes(t1);
-			var p2 = analisador.elementosDiferentes(t2);
-			var p1Ip2 = analisador.intersecao(t1, t2);
-			
-			// cria o texto do relatório.
-			var textoRelator = '<h1>Relatório de semelhança.</h1>' +
-				'<h2>' + autor1 + ' x ' + autor2 + '<h2>' +
-				'<h3>Semelhança = ' + semelhanca + '%</h3>' +
-				'<b>Texto 1 (' + t1.length + ' palavras): </b>' + texto1 + '<br><br>' +
-				'<b>Texto 2 (' + t2.length + ' palavras): </b>' + texto2 + '<br><br>' +
-				'<b>Palavras diferentes do texto 1 (' + p1.length + ' palavras): </b>' + p1.valueOf() + '<br><br>' +	
-				'<b>Palavras diferentes do texto 2 (' + p2.length + ' palavras): </b>' + p2.valueOf() + '<br><br>' +
-				'<b>Palavras comuns aos dois textos (' + p1Ip2.length + ' palavras): </b>' + p1Ip2.valueOf() + '<br><br>';				
-				
-			// insere um relatório no texto da div.
+			textoRelator = analisador.criarRelatorio(
+				autor1, 
+				texto1, 
+				autor2,
+				texto2
+			)
 			relatorio.innerHTML = textoRelator;
 		}
 		
@@ -120,6 +107,9 @@ Por exemplo:
 			// captura texto da área da biblioteca.
 			var texto = document.getElementById('txtlib').value;
 			
+			// Limpa o texto da área do relatório para entrar os novos.
+			relatorio.innerHTML = '';
+			
 			// guarda a divisão do conteúdo entre autores (posições ímpares)
 			// e seus textos (posiçoes pares diferente de zero).
 			var divisao = texto.split(/[@*]/);
@@ -134,14 +124,22 @@ Por exemplo:
 				}
 			}
 			
+			// cria o array que vai guardar os textos.
+			var textos = [];
+			
+			// loop que guarda os textos no seu array.
+			for (var i = 1; i < divisao.length; i++) {
+				if (i % 2 == 0) {
+					textos.push(divisao[i]);
+				}
+			}
+			
 			// cria um analisador.
 			analisador = new Analisador();
 			
 			// passa os textos da divisão para o analisador.
-			for (var i = 1; i < divisao.length; i++) {
-				if (i % 2 == 0) {
-					analisador.adicionar(divisao[i]);
-				}
+			for (var i = 0; i < textos.length; i++) {
+				analisador.adicionar(textos[i]);
 			}
 			
 			// cria a biblioteca de semelhança entre os textos.
@@ -163,18 +161,30 @@ Por exemplo:
 				semel += '<tr>'
 				for (var j = 0; j < lib.length; j++) {
 					// vai somando as semelhanças dos autores.
-					soma += new Number(lib[i][j]); 
+					soma += Number(lib[i][j]); 
 										
-					//Adiciona semelhança apenas entre autores diferentes.
+					// Adiciona semelhança apenas entre autores diferentes.
 					semel += (i != j) ? '<td><font color=' + escolherCor(lib[i][j]) + '>(' 
 						+ (i + 1) + ',' + (j + 1) + '):' + lib[i][j] + '%</font>'
-						: '<td align=center>-----';				
+						: '<td align=center>-----';	
+					
+					// Cria e concatena os relatórios dos pares de autores
+					// com valor igual ou maor que 70% de semelhança.
+					if (lib[i][j] >= 70.0 && i != j) {
+						textoRelator = analisador.criarRelatorio(
+							autores[i], 
+							textos[i], 
+							autores[j], 
+							textos[j]
+						)
+						relatorio.innerHTML += textoRelator;
+					}
 				}
 				
 				// Adiciona a média da linha na última coluna. É descontada a 
 				// semelhança de 100% com o próprio autor, restando apenas entre
 				// os diferentes dele.
-				var media = new Number((soma - 100) / (lib.length - 1)).toFixed(1);
+				var media = Number((soma - 100) / (lib.length - 1)).toFixed(1);
 				semel += '<td><font color=white>média=</font><font color=' + escolherCor(media) + '>'
 					+ media + '%</font>';
 			}
