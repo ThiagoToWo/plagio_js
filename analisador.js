@@ -36,7 +36,37 @@ Analisador.prototype = {
 		var semelhanca = 100 * (p1_inter_p2 / p1_uniao_p2);
 		
 		// o método retorna a semelhança com uma casa decimal.
-		return new Number(semelhanca).toFixed(1); 
+		return Number(semelhanca).toFixed(1); 
+	},
+	
+	// Cria um relatório em formato padrão com nomes dos autores, textos elementFromPoint
+	// suas palavras, palavras em comum e semelhança.
+	criarRelatorio: function(autor1, texto1, autor2, texto2) {
+		// prepara as variáveis do relatório;
+		var t1 = this.criarTokens(texto1);
+		var t2 = this.criarTokens(texto2);
+		var p1 = this.elementosDiferentes(t1);
+		var p2 = this.elementosDiferentes(t2);
+		
+		// Usa as palavras diferentespara agilizar união e intersação.
+		var p1Up2 = this.uniao(p1, p2);
+		var p1Ip2 = this.intersecao(p1, p2);
+		
+		// Aproveita as variáveis para caucular a semelhança evitando chamar
+		// repetidamente as mesmas funções já usadas nelas.
+		var semelhanca = Number(100 * (p1Ip2.length / p1Up2.length)).toFixed(1);
+		
+		// cria o texto do relatório.
+		var textoRelator = '<h1>Relatório de semelhança.</h1>' +
+			'<h2>' + autor1 + ' x ' + autor2 + '<h2>' +
+			'<h3>Semelhança = ' + semelhanca + '%</h3>' +
+			'<b>Texto 1 (' + t1.length + ' palavras): </b>' + texto1 + '<br><br>' +
+			'<b>Texto 2 (' + t2.length + ' palavras): </b>' + texto2 + '<br><br>' +
+			'<b>Palavras diferentes do texto 1 (' + p1.length + ' palavras): </b>' + p1.valueOf() + '<br><br>' +	
+			'<b>Palavras diferentes do texto 2 (' + p2.length + ' palavras): </b>' + p2.valueOf() + '<br><br>' +
+			'<b>Palavras comuns aos dois textos (' + p1Ip2.length + ' palavras): </b>' + p1Ip2.valueOf() + '<br><br>';				
+		
+		return textoRelator; 
 	},
 	
 	// Cria e retorna um array de i objetos, no qual cada atributo j desses
